@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kayfiyat Meme Generatori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #14151a;
+    --card-bg: #1e2027;
+    --ink: #eef0f4;
+    --dim: #8b90a0;
+    --accent: #ff5c72;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 50px;
+    font-family: 'Manrope', sans-serif;
+    color: var(--ink);
+  }
+
+  .eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 0 24px;
+  }
+
+  .mood-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 24px;
+  }
+
+  .mood-btn {
+    background: var(--card-bg);
+    border: 1px solid #2c2f38;
+    border-radius: 10px;
+    padding: 10px 4px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .mood-btn .emoji { font-size: 1.4rem; display: block; margin-bottom: 3px; }
+  .mood-btn .label { font-size: 0.6rem; color: var(--dim); }
+
+  .mood-btn:hover { border-color: var(--accent); }
+  .mood-btn.selected { border-color: var(--accent); background: #2a1f24; }
+  .mood-btn.selected .label { color: var(--accent); }
+  .mood-btn:active { transform: scale(0.95); }
+
+  .meme-card {
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 16px 36px rgba(0,0,0,0.5);
+    margin-bottom: 20px;
+  }
+
+  .meme-emoji { font-size: 6rem; }
+
+  .meme-text {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 1.5rem;
+    line-height: 1.15;
+    text-align: center;
+    color: #fff;
+    -webkit-text-stroke: 1.5px #000;
+    text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+    text-transform: uppercase;
+  }
+
+  .meme-text.top { top: 5%; }
+  .meme-text.bottom { bottom: 5%; }
+
+  button#regen-btn {
+    background: var(--accent);
+    color: #14151a;
+    border: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 13px 28px;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: filter 0.15s ease, transform 0.1s ease;
+  }
+  button#regen-btn:hover { filter: brightness(1.08); }
+  button#regen-btn:active { transform: translateY(2px); }
+
+  @media (max-width: 380px) {
+    .meme-text { font-size: 1.15rem; }
+    .meme-emoji { font-size: 4.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<p class="eyebrow">Bugungi holatga mos</p>
+<h1>Kayfiyat Meme Generatori</h1>
+
+<div class="mood-grid" id="mood-grid"></div>
+
+<div class="meme-card" id="meme-card">
+  <p class="meme-text top" id="meme-top">KAYFIYATNI TANLANG</p>
+  <span class="meme-emoji" id="meme-emoji">🙂</span>
+  <p class="meme-text bottom" id="meme-bottom">VA MEME TAYYOR BO'LADI</p>
+</div>
+
+<button id="regen-btn">Yangi meme</button>
+
+<script>
+  const moods = [
+    { key: "xursand", label: "Xursand", emoji: "😄", bg: ["#ffb703", "#fb8500"],
+      pairs: [["KAYFIYATIM 100%", "SABABI MENGA MA'LUM EMAS"], ["BUGUN HAMMA NARSA", "AJOYIB KETYAPTI (HOZIRCHA)"], ["QUVONCH DARAJAM", "MAKSIMUMDA"]] },
+    { key: "gamgin", label: "G'amgin", emoji: "😢", bg: ["#3a6ea5", "#1c3f60"],
+      pairs: [["KO'ZIMDA YOSH YO'Q", "FAQAT XAYOLIMDA MUZIQA BOR"], ["BUGUN MEN", "FAQAT SOYA BILAN GAPLASHAMAN"], ["DRAMATIK MUZIKA", "AVTOMATIK YOQILDI"]] },
+    { key: "charchagan", label: "Charchagan", emoji: "🥱", bg: ["#6d597a", "#355070"],
+      pairs: [["ENERGIYAM", "TUGADI (YANA)"], ["UYQU KERAK", "LEKIN DEDLAYN HAM KERAK"], ["BATAREYAM", "1% QOLDI"]] },
+    { key: "asabiy", label: "Asabiy", emoji: "😤", bg: ["#d62828", "#8c1c1c"],
+      pairs: [["TINCHLIKKA", "5 DAQIQA QOLDI"], ["MENGA TEGMANG", "YOKI OQIBATIGA CHIDANG"], ["SABR IDISHIM", "TO'LIB TOSHDI"]] },
+    { key: "zerikkan", label: "Zerikkan", emoji: "😐", bg: ["#606c38", "#283618"],
+      pairs: [["HECH NARSA", "QILGIM KELMAYAPTI"], ["VAQT", "TO'XTAB QOLGANGA O'XSHAYDI"], ["ZERIKISH DARAJASI", "KOSMIK"]] },
+    { key: "hayajonli", label: "Hayajonli", emoji: "🤩", bg: ["#ff006e", "#8338ec"],
+      pairs: [["ADRENALIN", "MAKSIMAL DARAJADA"], ["BUGUN NIMADIR", "BO'LADI, HIS QILYAPMAN"], ["HAYAJONDAN", "TIL BIYLANYAPTI"]] },
+    { key: "uxlash", label: "Uyqusirab", emoji: "😴", bg: ["#2b2d42", "#0f1024"],
+      pairs: [["KO'ZLARIM", "O'ZI YOPILYAPTI"], ["\"YANA 5 DAQIQA...\"", "(3 SOAT O'TDI)"], ["UYQU REJIMI:", "YOQILDI"]] },
+    { key: "ishonchli", label: "Ishonchli", emoji: "😎", bg: ["#118ab2", "#073b4c"],
+      pairs: [["BUGUN MEN", "HAMMA NARSANI UDDALAYMAN"], ["ISHONCH DARAJAM", "OSMONDA"], ["HECH NARSA MENI", "TO'XTATOLMAYDI"]] }
+  ];
+
+  const grid = document.getElementById('mood-grid');
+  const memeCard = document.getElementById('meme-card');
+  const memeTop = document.getElementById('meme-top');
+  const memeBottom = document.getElementById('meme-bottom');
+  const memeEmoji = document.getElementById('meme-emoji');
+  const regenBtn = document.getElementById('regen-btn');
+
+  let currentMood = null;
+
+  moods.forEach((m) => {
+    const btn = document.createElement('div');
+    btn.className = 'mood-btn';
+    btn.innerHTML = `<span class="emoji">${m.emoji}</span><span class="label">${m.label}</span>`;
+    btn.addEventListener('click', () => selectMood(m, btn));
+    grid.appendChild(btn);
+  });
+
+  function selectMood(mood, btnEl) {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btnEl.classList.add('selected');
+    currentMood = mood;
+    renderMeme();
+  }
+
+  function renderMeme() {
+    if (!currentMood) return;
+    const pair = currentMood.pairs[Math.floor(Math.random() * currentMood.pairs.length)];
+    memeTop.textContent = pair[0];
+    memeBottom.textContent = pair[1];
+    memeEmoji.textContent = currentMood.emoji;
+    memeCard.style.background = `linear-gradient(160deg, ${currentMood.bg[0]}, ${currentMood.bg[1]})`;
+  }
+
+  regenBtn.addEventListener('click', () => {
+    if (!currentMood) currentMood = moods[Math.floor(Math.random() * moods.length)];
+    renderMeme();
+  });
+</script>
+
+</body>
+</html>
